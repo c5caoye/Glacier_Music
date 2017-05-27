@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:padding="20dp">
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.25"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/prev_green" />
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.25"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/play_green" />
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.25"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/next_green" />
+
+    <ImageView
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.25"
+        android:adjustViewBounds="true"
+        app:srcCompat="@drawable/shuffle_green" />
+
+</LinearLayout>
