@@ -1,8 +1,7 @@
-package miaoyipu.glaciermusic;
+package miaoyipu.glaciermusic.songs;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import miaoyipu.glaciermusic.R;
+import miaoyipu.glaciermusic.songs.Songs;
 
 /**
  * Created by cy804 on 2017-05-21.

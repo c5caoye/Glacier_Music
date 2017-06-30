@@ -21,7 +21,7 @@ import java.util.Random;
 
 import miaoyipu.glaciermusic.MainActivity;
 import miaoyipu.glaciermusic.R;
-import miaoyipu.glaciermusic.Songs;
+import miaoyipu.glaciermusic.songs.Songs;
 /**
  * Created by cy804 on 2017-06-05.
  */
@@ -73,6 +73,7 @@ public class MusicService extends Service implements
     public boolean onUnbind(Intent intent) {
         player.stop();
         player.release();
+        player = null;
         return false;
     }
 
@@ -156,13 +157,18 @@ public class MusicService extends Service implements
         }
         play();
     }
-
+    
     public void playPrev() {
         curPosn--;
         if (curPosn < 0) {
             curPosn = songListSize - 1;
         }
         play();
+    }
+
+    public void setSongAndPlay(int idx) {
+        curPosn = idx;
+        play(idx);
     }
 
     @Override
@@ -207,11 +213,7 @@ public class MusicService extends Service implements
 
     @Override
     public void onDestroy() {
+        if (player != null) player.release();
         stopForeground(true);
-    }
-
-    public void setSongAndPlay(int idx) {
-        curPosn = idx;
-        play(idx);
     }
 }

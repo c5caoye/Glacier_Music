@@ -1,15 +1,13 @@
-package miaoyipu.glaciermusic;
+package miaoyipu.glaciermusic.songs;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
