@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -21,7 +22,6 @@ import java.util.Random;
 import miaoyipu.glaciermusic.MainActivity;
 import miaoyipu.glaciermusic.R;
 import miaoyipu.glaciermusic.Songs;
-
 /**
  * Created by cy804 on 2017-06-05.
  */
@@ -47,6 +47,8 @@ public class MusicService extends Service implements
     private boolean shuffle = false;
     private Random rand;
     private int songListSize;
+    private AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    private int currentVolume;
 
     public void onCreate() {
         super.onCreate();
@@ -74,9 +76,25 @@ public class MusicService extends Service implements
         return false;
     }
 
+    /* focusChange : int: the type of focus change, one of AUDIOFOCUS_GAIN, AUDIOFOCUS_LOSS,
+    * AUDIOFOCUS_LOSS_TRANSIENT and AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK.
+    */
     @Override
     public void onAudioFocusChange(int focusChange) {
-
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_GAIN : // Resume the stream volume
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, AudioManager.FLAG_PLAY_SOUND);
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS: this.pause(); break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: this.pause(); break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: // Lower volume
+                int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                int newVolume = new Double(maxVolume * 0.1).intValue();
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                break;
+            default: break;
+        }
     }
 
     @Override
