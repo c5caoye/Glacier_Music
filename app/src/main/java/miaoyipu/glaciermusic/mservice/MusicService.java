@@ -32,22 +32,18 @@ public class MusicService extends Service implements
         MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener,
         AudioManager.OnAudioFocusChangeListener{
 
-    public class MusicBinder extends Binder {
-        public MusicService getService() {return MusicService.this;}
-    }
-
     private static final String TAG = "MService";
     private static final int NOTIFY_ID = 13;
     private final IBinder mBind = new MusicBinder();
     private static MediaPlayer player;
     private ArrayList<Songs> songList;
     private ArrayList<Songs> shuffleList;
-    private int curPosn;
+    private int curPosn = 0;
     private String songTitle = "";
     private boolean shuffle = false;
     private Random rand;
     private int songListSize;
-    private AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    private AudioManager audioManager;
     private int currentVolume;
 
     public void onCreate() {
@@ -62,6 +58,12 @@ public class MusicService extends Service implements
         player.setOnInfoListener(this);
         player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    }
+
+    public class MusicBinder extends Binder {
+        public MusicService getService() {return MusicService.this;}
     }
 
     @Override
@@ -157,7 +159,7 @@ public class MusicService extends Service implements
         }
         play();
     }
-    
+
     public void playPrev() {
         curPosn--;
         if (curPosn < 0) {
@@ -169,6 +171,22 @@ public class MusicService extends Service implements
     public void setSongAndPlay(int idx) {
         curPosn = idx;
         play(idx);
+    }
+
+    public boolean isPlaying() {
+        return player.isPlaying();
+    }
+
+    public boolean isShuffle() {
+        return this.shuffle;
+    }
+
+    public String getTitle() {
+        return songTitle;
+    }
+
+    public MediaPlayer getPlayer() {
+        return player;
     }
 
     @Override

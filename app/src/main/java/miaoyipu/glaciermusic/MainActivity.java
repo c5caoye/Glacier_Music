@@ -1,8 +1,13 @@
 package miaoyipu.glaciermusic;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,11 +22,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import miaoyipu.glaciermusic.mservice.MusicService;
 import miaoyipu.glaciermusic.songs.Songs;
 import miaoyipu.glaciermusic.songs.SongsAdapter;
 
@@ -31,6 +38,33 @@ public class MainActivity extends AppCompatActivity {
     private boolean is_pln = false; // Delete this later.
     private boolean is_shuffle = false;
     private ArrayList<Songs> song_list;
+
+    public static MusicService musicService;
+    private boolean musicBound = false;
+    private Intent playIntent;
+
+    private ServiceConnection musicConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            musicService = binder.getService();
+            musicService.setSongList(song_list);
+            musicBound = true;
+
+            musicService.getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    musicService.playNext();
+                    setControlBarTitle();
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +80,19 @@ public class MainActivity extends AppCompatActivity {
         int storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (storage_check == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
-        } else {setSongAdapter();}
+        }
+        setSongAdapter();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!musicBound) {
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
     }
 
     @Override
@@ -96,19 +142,18 @@ public class MainActivity extends AppCompatActivity {
         songs_view.setAdapter(songAdpter);
     }
 
-
-
     final View.OnClickListener play_button_onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             AppCompatImageView iv = (AppCompatImageView) v;
             Log.d(TAG, "play/pause");
-            if (is_pln) {
+            if (!musicService.isPlaying()) {
                 iv.setImageResource(R.drawable.pause);
-                is_pln = false;
+                musicService.play();
+                setControlBarTitle();
             } else {
                 iv.setImageResource(R.drawable.play);
-                is_pln = true;
+                musicService.pause();
             }
         }
     };
@@ -117,13 +162,24 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             FloatingActionButton fab = (FloatingActionButton)v;
-            if (is_shuffle) {
-                is_shuffle = false;
+            if (musicService.isShuffle()) {
                 fab.setImageResource(R.drawable.loop);
+                musicService.setShuffle();
             } else {
-                is_shuffle = true;
                 fab.setImageResource(R.drawable.shuffle);
+                musicService.setShuffle();
             }
         }
     };
+
+    public void setControlBarTitle() {
+        TextView view = (TextView) findViewById(R.id.control_bar_title);
+        view.setText(musicService.getTitle());
+    }
+
+    public void songPicked(View view) {
+        Log.d(TAG, view.getTag().toString());
+        musicService.setSongAndPlay(Integer.parseInt(view.getTag().toString()));
+        setControlBarTitle();
+    }
 }
