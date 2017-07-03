@@ -7,12 +7,14 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ public class FullScreenActivity extends AppCompatActivity {
 
             setInfo();
             setPlayButton();
+            initSeekBar();
         }
 
         @Override
@@ -106,5 +109,32 @@ public class FullScreenActivity extends AppCompatActivity {
         }
         title.setText(song.getTitle());
         artist.setText(song.getArtist());
+    }
+
+    private void initSeekBar() {
+        final SeekBar seekBar = (SeekBar)findViewById(R.id.fullscreen_seekbar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) musicService.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        }
+        );
+
+        final Handler handler = new Handler();
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                seekBar.setMax(musicService.getDuration());
+                seekBar.setProgress(musicService.getPosn());
+                handler.postDelayed(this, 1000);
+            }
+        });
     }
 }

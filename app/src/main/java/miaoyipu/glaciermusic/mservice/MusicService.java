@@ -193,6 +193,12 @@ public class MusicService extends Service implements
 
     public Songs getSong() { return songList.get(curPosn); }
 
+    public void seekTo(int progress) { player.seekTo(progress); }
+
+    public int getDuration() { return player.getDuration(); }
+
+    public int getPosn() { return player.getCurrentPosition(); }
+
     @Override
     public void onCompletion(MediaPlayer mp) {
         playNext();
