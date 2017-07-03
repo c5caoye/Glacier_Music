@@ -7,6 +7,7 @@
     android:padding="20dp">
 
     <ImageView
+        android:id="@+id/fullscreen_prev"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="0.25"
@@ -18,14 +19,16 @@
         android:layout_width="0dp"
         android:layout_weight="0.25"
         android:adjustViewBounds="true"
-        app:srcCompat="@drawable/play_green" />
+        app:srcCompat="@drawable/play_green"
+        android:id="@+id/fullscreen_play" />
 
     <ImageView
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="0.25"
         android:adjustViewBounds="true"
-        app:srcCompat="@drawable/next_green" />
+        app:srcCompat="@drawable/next_green"
+        android:id="@+id/fullscreen_next" />
 
     <ImageView
         android:layout_height="wrap_content"

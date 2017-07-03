@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,8 +36,6 @@ import miaoyipu.glaciermusic.songs.SongsAdapter;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
     private static final int READ_STORAGE = 11;
-    private boolean is_pln = false; // Delete this later.
-    private boolean is_shuffle = false;
     private ArrayList<Songs> song_list;
 
     public static MusicService musicService;
@@ -58,6 +57,9 @@ public class MainActivity extends AppCompatActivity {
                     setControlBarTitle();
                 }
             });
+
+            setPlayButton();
+            setControlBarTitle();
         }
 
         @Override
@@ -91,8 +93,17 @@ public class MainActivity extends AppCompatActivity {
         if (!musicBound) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            startService(playIntent);
+//            startService(playIntent);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(playIntent);
+        unbindService(musicConnection);
+        musicService = null;
+        musicBound = false;
     }
 
     @Override
@@ -174,12 +185,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void setControlBarTitle() {
         TextView view = (TextView) findViewById(R.id.control_bar_title);
-        view.setText(musicService.getTitle());
+        if (musicService != null) {
+            view.setText(musicService.getTitle());
+        }
+    }
+
+    private void setPlayButton() {
+        ImageView play_btn = (ImageView) findViewById(R.id.control_bar_play);
+        if (musicService != null && musicService.isPlaying()) {
+            play_btn.setImageResource(R.drawable.pause);
+        } else {
+            play_btn.setImageResource(R.drawable.play);
+        }
     }
 
     public void songPicked(View view) {
-        Log.d(TAG, view.getTag().toString());
         musicService.setSongAndPlay(Integer.parseInt(view.getTag().toString()));
         setControlBarTitle();
+        ImageView play_btn = (ImageView)findViewById(R.id.control_bar_play);
+        play_btn.setImageResource(R.drawable.pause);
     }
 }

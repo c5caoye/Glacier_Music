@@ -177,6 +177,8 @@ public class MusicService extends Service implements
         return player.isPlaying();
     }
 
+    public boolean isInitialized() { return player != null; }
+
     public boolean isShuffle() {
         return this.shuffle;
     }
@@ -188,6 +190,8 @@ public class MusicService extends Service implements
     public MediaPlayer getPlayer() {
         return player;
     }
+
+    public Songs getSong() { return songList.get(curPosn); }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
