@@ -36,6 +36,7 @@ import miaoyipu.glaciermusic.songs.SongsAdapter;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
     private static final int READ_STORAGE = 11;
+    private static final int WRITE_STORAGE = 12;
     private ArrayList<Songs> song_list;
 
     public static MusicService musicService;
@@ -79,11 +80,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.control_bar_play).setOnClickListener(play_button_onClickListener);
         findViewById(R.id.fab).setOnClickListener(fab_onClickListener);
 
-        int storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (storage_check == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
-        }
-        setSongAdapter();
+        handlePermission();
     }
 
     @Override
@@ -204,5 +201,17 @@ public class MainActivity extends AppCompatActivity {
         setControlBarTitle();
         ImageView play_btn = (ImageView)findViewById(R.id.control_bar_play);
         play_btn.setImageResource(R.drawable.pause);
+    }
+
+    private void handlePermission() {
+        int storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int w_storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (storage_check == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
+        }
+        if (w_storage_check == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE);
+        }
+        setSongAdapter();
     }
 }

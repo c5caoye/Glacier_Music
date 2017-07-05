@@ -16,7 +16,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="cd49d8acdf5a24ef5282bfade0f96700dca95516">
+        sha1="eb30c17b27e53a0e65e04744bd4f937cf096d331">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_0365340d03b8f316f1c76ba3a9fae1425e0af7bc\classes.dex" />
     </item>
     <item
@@ -61,7 +61,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="23798a5212d7a4b1458c3d81808b802cd50166b3">
+        sha1="dac0f62c88a92c1f7c5046953f8927f20184e854">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_684b1b3d3c65ed4e411b9732ac23be0fcfc658cf\classes.dex" />
     </item>
     <item
@@ -72,6 +72,15 @@
         revision="25.0.0"
         sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-fragment-24.2.1_d2ee76f72c207eaf59784ffef14e945e3234c46e\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\libs\glide-3.8.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="9bada650e1afe9c6174ddc0d113c1fce4dc26fe0">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\2\glide-3.8.0_4ce2d174bec0e9cd263f522cc5a79c5337bc0590\classes.dex" />
     </item>
     <item
         is-multidex="true"

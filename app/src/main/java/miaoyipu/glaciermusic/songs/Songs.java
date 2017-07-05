@@ -1,6 +1,6 @@
 package miaoyipu.glaciermusic.songs;
 
-import android.content.ContentResolver;
+    import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -8,7 +8,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import java.io.IOException;
+    import com.bumptech.glide.load.DecodeFormat;
+    import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+    import com.bumptech.glide.load.resource.bitmap.BitmapDecoder;
+
+    import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -63,6 +67,7 @@ public class Songs {
                 Bitmap bm = null;
 
                 try {
+
                     bm = MediaStore.Images.Media.getBitmap(musicResolver, art_Uri);
                 }  catch (IOException e) {
                     e.printStackTrace();

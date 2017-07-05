@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 import miaoyipu.glaciermusic.R;
@@ -23,9 +25,12 @@ public class SongsAdapter extends BaseAdapter{
 
     private ArrayList<Songs> songs;
     private LayoutInflater songInf;
+    private Context context;
 
     public SongsAdapter(Context c, ArrayList<Songs> songs) {
-        this.songs = songs; songInf = LayoutInflater.from(c);
+        this.songs = songs;
+        songInf = LayoutInflater.from(c);
+        this.context = c;
     }
 
     @Override
@@ -54,7 +59,15 @@ public class SongsAdapter extends BaseAdapter{
         Songs cur_song = songs.get(position);
 
         Bitmap bm = cur_song.getAlbum_cover();
-        if (bm != null) {album_view.setImageBitmap(bm);}
+//        if (bm != null) {album_view.setImageBitmap(bm);}
+
+        if (bm != null) {
+            Glide.with(context)
+                    .load(bm)
+                    .placeholder(R.drawable.default_album)
+                    .into(album_view);
+        }
+
         title_viewe.setText(cur_song.getTitle());
         artist_view.setText(cur_song.getArtist());
 
