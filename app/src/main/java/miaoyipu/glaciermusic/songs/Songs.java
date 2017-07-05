@@ -1,18 +1,11 @@
 package miaoyipu.glaciermusic.songs;
 
-    import android.content.ContentResolver;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-
-    import com.bumptech.glide.load.DecodeFormat;
-    import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-    import com.bumptech.glide.load.resource.bitmap.BitmapDecoder;
-
-    import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -22,11 +15,12 @@ import java.util.ArrayList;
 public class Songs {
     private long id;
     private String title, artist;
-    private Bitmap album_cover;
+    private Uri albumUri;
 
-    public Songs(long id, String title, String artist, Bitmap album_cover) {
-        this.id = id; this.title = title; this.artist = artist; this.album_cover = album_cover;
+    public Songs(long id, String title, String artist, Uri albumUri) {
+        this.id = id; this.title = title; this.artist = artist; this.albumUri = albumUri;
     }
+
 
     public long getId() {
         return id;
@@ -40,9 +34,7 @@ public class Songs {
         return artist;
     }
 
-    public Bitmap getAlbum_cover() {
-        return album_cover;
-    }
+    public Uri getAlbumUri() { return albumUri; }
 
     public static ArrayList<Songs> getSongList(ContentResolver musicResolver, Resources res) {
         ArrayList<Songs> song_list = new ArrayList<>();
@@ -61,19 +53,10 @@ public class Songs {
                 String artist = musicCursor.getString(artist_col);
                 long album = musicCursor.getLong(album_col);
 
-                Uri album_Uri = Uri.parse("content://media/external/audio/albumart");
-                Uri art_Uri = ContentUris.withAppendedId(album_Uri, album);
+                Uri albumUri = Uri.parse("content://media/external/audio/albumart");
+                Uri artUri = ContentUris.withAppendedId(albumUri, album);
 
-                Bitmap bm = null;
-
-                try {
-
-                    bm = MediaStore.Images.Media.getBitmap(musicResolver, art_Uri);
-                }  catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                song_list.add(new Songs(id, title, artist, bm));
+                song_list.add(new Songs(id, title, artist, artUri));
             } while (musicCursor.moveToNext());
         }
 

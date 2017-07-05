@@ -2,6 +2,7 @@ package miaoyipu.glaciermusic.songs;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import miaoyipu.glaciermusic.R;
@@ -53,22 +55,18 @@ public class SongsAdapter extends BaseAdapter{
         LinearLayout songLay = (LinearLayout) songInf.inflate(R.layout.song_adapter_layout, parent, false);
 
         ImageView album_view = (ImageView) songLay.findViewById(R.id.song_album);
-        TextView title_viewe = (TextView) songLay.findViewById(R.id.song_title);
+        TextView title_view = (TextView) songLay.findViewById(R.id.song_title);
         TextView artist_view = (TextView) songLay.findViewById(R.id.song_artist);
 
         Songs cur_song = songs.get(position);
 
-        Bitmap bm = cur_song.getAlbum_cover();
-//        if (bm != null) {album_view.setImageBitmap(bm);}
+        Glide.with(context)
+                .load(cur_song.getAlbumUri())
+                .asBitmap()
+                .placeholder(R.drawable.default_album)
+                .into(album_view);
 
-        if (bm != null) {
-            Glide.with(context)
-                    .load(bm)
-                    .placeholder(R.drawable.default_album)
-                    .into(album_view);
-        }
-
-        title_viewe.setText(cur_song.getTitle());
+        title_view.setText(cur_song.getTitle());
         artist_view.setText(cur_song.getArtist());
 
         songLay.setTag(position);

@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 import miaoyipu.glaciermusic.mservice.MusicService;
@@ -103,10 +105,18 @@ public class FullScreenActivity extends AppCompatActivity {
         ImageView cover = (ImageView) findViewById(R.id.fullscreen_album);
         TextView title = (TextView) findViewById(R.id.fullscreen_tittle);
         TextView artist = (TextView) findViewById(R.id.fullscreen_artist);
-        Bitmap album = song.getAlbum_cover();
-        if (album != null) {
-            cover.setImageBitmap(Bitmap.createScaledBitmap(album, 500, 500, false));
-        }
+//        Bitmap album = song.getAlbum_cover();
+
+        Glide.with(this)
+                .load(song.getAlbumUri())
+                .asBitmap()
+                .placeholder(R.drawable.default_album)
+                .into(cover);
+
+//        Bitmap album = null;
+//        if (album != null) {
+//            cover.setImageBitmap(Bitmap.createScaledBitmap(album, 500, 500, false));
+//        }
         title.setText(song.getTitle());
         artist.setText(song.getArtist());
     }
