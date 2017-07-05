@@ -40,6 +40,8 @@ public class MusicService extends Service implements
     private ArrayList<Songs> shuffleList;
     private int curPosn = 0;
     private String songTitle = "";
+    private String songArtist = "";
+    private Uri songUri = null;
     private boolean shuffle = false;
     private Random rand;
     private int songListSize;
@@ -48,7 +50,9 @@ public class MusicService extends Service implements
 
     public void onCreate() {
         super.onCreate();
+
         rand = new Random();
+
         player = new MediaPlayer();
         player.setOnPreparedListener(this);
         player.setOnCompletionListener(this);
@@ -141,6 +145,9 @@ public class MusicService extends Service implements
 
     public void startPlay(Songs song) {
         songTitle = song.getTitle();
+        songArtist = song.getArtist();
+        songUri = song.getAlbumUri();
+
         long id = song.getId();
         Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         try {
@@ -187,11 +194,13 @@ public class MusicService extends Service implements
         return songTitle;
     }
 
+    public String getArtist() { return songArtist; }
+
+    public Uri getAlbumUri() { return songUri; }
+
     public MediaPlayer getPlayer() {
         return player;
     }
-
-    public Songs getSong() { return songList.get(curPosn); }
 
     public void seekTo(int progress) { player.seekTo(progress); }
 

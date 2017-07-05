@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     public static MusicService musicService;
     private boolean musicBound = false;
     private Intent playIntent;
+
+    private PowerManager.WakeLock wakeLock;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         @Override
@@ -80,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.control_bar_play).setOnClickListener(play_button_onClickListener);
         findViewById(R.id.fab).setOnClickListener(fab_onClickListener);
 
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MAIN LOCK");
+        wakeLock.acquire();
+
         handlePermission();
     }
 
@@ -95,12 +102,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         stopService(playIntent);
         unbindService(musicConnection);
         musicService = null;
         musicBound = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wakeLock.release();
+//        stopService(playIntent);
+//        unbindService(musicConnection);
+//        musicService = null;
+//        musicBound = false;
     }
 
     @Override
