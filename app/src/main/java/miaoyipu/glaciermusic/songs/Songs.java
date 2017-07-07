@@ -46,17 +46,20 @@ public class Songs {
             int title_col = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int artist_col = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int album_col = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int duration_col = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
             do {
-                long id = musicCursor.getLong(id_col);
-                String title = musicCursor.getString(title_col);
-                String artist = musicCursor.getString(artist_col);
-                long album = musicCursor.getLong(album_col);
+                if (musicCursor.getLong(duration_col) >= 30000) {
+                    long id = musicCursor.getLong(id_col);
+                    String title = musicCursor.getString(title_col);
+                    String artist = musicCursor.getString(artist_col);
+                    long album = musicCursor.getLong(album_col);
 
-                Uri albumUri = Uri.parse("content://media/external/audio/albumart");
-                Uri artUri = ContentUris.withAppendedId(albumUri, album);
+                    Uri albumUri = Uri.parse("content://media/external/audio/albumart");
+                    Uri artUri = ContentUris.withAppendedId(albumUri, album);
 
-                song_list.add(new Songs(id, title, artist, artUri));
+                    song_list.add(new Songs(id, title, artist, artUri));
+                }
             } while (musicCursor.moveToNext());
         }
 
