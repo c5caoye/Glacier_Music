@@ -7,7 +7,9 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -71,6 +73,7 @@ public class FullScreenActivity extends AppCompatActivity {
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
         }else {
             setOnCompletion();
+            initSeekBar();
         }
     }
 
@@ -151,8 +154,8 @@ public class FullScreenActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 musicService.playNext();
+                playBtn.setImageResource(R.drawable.pause_green);
                 setInfo();
-                setButton();
             }
         });
     }
