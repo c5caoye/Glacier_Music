@@ -82,15 +82,18 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (!musicBound) {
             playIntent = new Intent(this, MusicService.class);
+            startService(playIntent);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-        } else { setOnCompletion();}
-
-        setControlBarTitle();
-        setPlayButton();
+        } else {
+            setOnCompletion();
+            setControlBarTitle();
+            setPlayButton();
+        }
     }
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "DESTORY");
         super.onDestroy();
         unbindService(musicConnection);
         stopService(playIntent);

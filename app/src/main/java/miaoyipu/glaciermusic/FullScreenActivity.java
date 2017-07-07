@@ -67,6 +67,7 @@ public class FullScreenActivity extends AppCompatActivity {
         active = true;
         if (!musicBound) {
             playIntent = new Intent(this, MusicService.class);
+            startService(playIntent);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
         }else {
             setOnCompletion();
@@ -83,6 +84,7 @@ public class FullScreenActivity extends AppCompatActivity {
     protected  void onDestroy() {
         super.onDestroy();
         unbindService(musicConnection);
+        stopService(playIntent);
         musicBound = false;
     }
 
@@ -134,8 +136,10 @@ public class FullScreenActivity extends AppCompatActivity {
             @Override
             public void run(){
                 if (active) {
-                    seekBar.setMax(musicService.getDuration());
-                    seekBar.setProgress(musicService.getPosn());
+                    if (musicService.isRunning()) {
+                        seekBar.setMax(musicService.getDuration());
+                        seekBar.setProgress(musicService.getPosn());
+                    }
                     handler.postDelayed(this, 1000);
                 }
             }

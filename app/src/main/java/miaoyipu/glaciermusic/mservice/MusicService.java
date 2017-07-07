@@ -43,6 +43,7 @@ public class MusicService extends Service implements
     private AudioManager audioManager;
     private boolean shuffle = false;
     private Uri songUri;
+    private boolean isRunning = false;
 
     public void onCreate() {
         super.onCreate();
@@ -161,6 +162,7 @@ public class MusicService extends Service implements
         }
 
         player.prepareAsync();
+        isRunning = true;
     }
 
     public void playNext() {
@@ -187,6 +189,8 @@ public class MusicService extends Service implements
     public boolean isPlaying() {
         return player.isPlaying();
     }
+
+    public boolean isRunning() { return this.isRunning; }
 
     public boolean isInitialized() { return player != null; }
 
@@ -254,12 +258,14 @@ public class MusicService extends Service implements
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "SERVICE DESTROY");
         super.onDestroy();
         if (player != null){
+            player.stop();
             player.reset();
-            Log.d(TAG, "Releasing player");
             player.release();
         }
+        stopSelf();
         stopForeground(true);
     }
 }
