@@ -17,7 +17,7 @@
             layout="@layout/song_dis"></include>
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
+            android:id="@+id/main_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxHeight="70dp"

@@ -35,6 +35,7 @@
         android:layout_width="0dp"
         android:layout_weight="0.25"
         android:adjustViewBounds="true"
-        app:srcCompat="@drawable/shuffle_green" />
+        app:srcCompat="@drawable/shuffle_green"
+        android:id="@+id/fullscreen_shuffle"/>
 
 </LinearLayout>

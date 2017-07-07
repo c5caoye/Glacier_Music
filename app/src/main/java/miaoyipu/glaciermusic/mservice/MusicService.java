@@ -19,40 +19,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import miaoyipu.glaciermusic.MainActivity;
+import miaoyipu.glaciermusic.FullScreenActivity;
 import miaoyipu.glaciermusic.R;
 import miaoyipu.glaciermusic.songs.Songs;
+
 /**
  * Created by cy804 on 2017-06-05.
  */
-
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener,
         AudioManager.OnAudioFocusChangeListener{
 
+    private final IBinder mBind = new MusicBinder();
     private static final String TAG = "MService";
     private static final int NOTIFY_ID = 13;
-    private final IBinder mBind = new MusicBinder();
     private static MediaPlayer player;
-    private ArrayList<Songs> songList;
-    private ArrayList<Songs> shuffleList;
-    private int curPosn = 0;
-    private String songTitle = "";
-    private String songArtist = "";
-    private Uri songUri = null;
-    private boolean shuffle = false;
-    private Random rand;
-    private int songListSize;
+
+    private ArrayList<Songs> songList, shuffleList;
+    private int songListSize, currentVolume, curPosn;
+    private String songTitle = "Glacier Music", songArtist = "Unknown";
     private AudioManager audioManager;
-    private int currentVolume;
+    private boolean shuffle = false;
+    private Uri songUri;
 
     public void onCreate() {
         super.onCreate();
 
-        rand = new Random();
-
+        Log.d(TAG, "Initializing MediaPlayer");
         player = new MediaPlayer();
         player.setOnPreparedListener(this);
         player.setOnCompletionListener(this);
@@ -72,29 +67,32 @@ public class MusicService extends Service implements
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBind;
+        return mBind; // mBind = new MusicBinder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        player.stop();
+        player.reset();
         player.release();
         player = null;
         return false;
     }
 
-    /* focusChange : int: the type of focus change, one of AUDIOFOCUS_GAIN, AUDIOFOCUS_LOSS,
-    * AUDIOFOCUS_LOSS_TRANSIENT and AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK.
-    */
     @Override
     public void onAudioFocusChange(int focusChange) {
         switch (focusChange) {
             case AudioManager.AUDIOFOCUS_GAIN : // Resume the stream volume
+                Log.d(TAG, "AUDIOFOCUS_GAIN");
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, AudioManager.FLAG_PLAY_SOUND);
                 break;
-            case AudioManager.AUDIOFOCUS_LOSS: this.pause(); break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: this.pause(); break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                Log.d(TAG, "AUDIOFOCUS_LOSS");
+                this.pause(); break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
+                this.pause(); break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: // Lower volume
+                Log.d(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
                 int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                 currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 int newVolume = new Double(maxVolume * 0.1).intValue();
@@ -105,23 +103,29 @@ public class MusicService extends Service implements
     }
 
     @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-
-    }
+    public void onBufferingUpdate(MediaPlayer mp, int percent) {}
 
     public void setSongList(ArrayList<Songs> theSongs) {
+        Log.d(TAG, "Setting song list");
         songList = theSongs;
         shuffleList = (ArrayList<Songs>) songList.clone();
         Collections.shuffle(shuffleList);
         songListSize = theSongs.size();
+        curPosn = 0;
     }
 
     public void setShuffle() {
+        Log.d(TAG, "Toggle Shuffle");
         shuffle = !shuffle;
     }
 
     public void pause() {
+        Log.d(TAG, "PAUSE");
         player.pause();
+    }
+
+    public void pausePlay() {
+        player.start();
     }
 
     public void play() {
@@ -227,7 +231,7 @@ public class MusicService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
-        Intent noIntent = new Intent(this, MainActivity.class);
+        Intent noIntent = new Intent(this, FullScreenActivity.class);
         noIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivities(this, 0, new Intent[]{noIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(this);
@@ -250,7 +254,12 @@ public class MusicService extends Service implements
 
     @Override
     public void onDestroy() {
-        if (player != null) player.release();
+        super.onDestroy();
+        if (player != null){
+            player.reset();
+            Log.d(TAG, "Releasing player");
+            player.release();
+        }
         stopForeground(true);
     }
 }

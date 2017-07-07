@@ -16,17 +16,8 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="eb30c17b27e53a0e65e04744bd4f937cf096d331">
+        sha1="b8ec6b112b5ef5d75390b94570260ed9da829393">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_0365340d03b8f316f1c76ba3a9fae1425e0af7bc\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="94bc1dfb84dcc8b6f6f8f7cc726d7b2dd39c1574">
-        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-animated-vector-drawable-24.2.1_72875fc816dff06e6020547e3c7a77723663d81f\classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -48,30 +39,12 @@
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
-        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-v4-24.2.1_dad22d01090157263f5d59139e758d6270634f16\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="dac0f62c88a92c1f7c5046953f8927f20184e854">
+        sha1="86da5b2192daf46b6c16635388a079ff96616ad6">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_684b1b3d3c65ed4e411b9732ac23be0fcfc658cf\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-fragment\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
-        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-fragment-24.2.1_d2ee76f72c207eaf59784ffef14e945e3234c46e\classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -81,6 +54,60 @@
         revision="25.0.0"
         sha1="9bada650e1afe9c6174ddc0d113c1fce4dc26fe0">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\2\glide-3.8.0_4ce2d174bec0e9cd263f522cc5a79c5337bc0590\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="9c4c3bc902450c39ed54de170db4fb12aea20a35">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-core-utils-24.2.1_d96ae7d308a00c33b69e40f7d2c9ed3a17e1ebcf\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\24.2.1\support-annotations-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="8de3aafecbdf98a61db6427f008f2d515bcd2544">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-24.2.1_36adea84af7ce3685e8678eeb5c5841fa9a47385\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\24.2.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="09b462bbcb77650284bd6614f1a32f360ef369f8">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-media-compat-24.2.1_7186546d801e6bb28f2129b6cfcb478873a30164\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.2.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="94bc1dfb84dcc8b6f6f8f7cc726d7b2dd39c1574">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-animated-vector-drawable-24.2.1_72875fc816dff06e6020547e3c7a77723663d81f\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.2.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-v4-24.2.1_dad22d01090157263f5d59139e758d6270634f16\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-fragment\24.2.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
+        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-fragment-24.2.1_d2ee76f72c207eaf59784ffef14e945e3234c46e\classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -120,24 +147,6 @@
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="9c4c3bc902450c39ed54de170db4fb12aea20a35">
-        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-core-utils-24.2.1_d96ae7d308a00c33b69e40f7d2c9ed3a17e1ebcf\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\cy804\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\24.2.1\support-annotations-24.2.1.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="8de3aafecbdf98a61db6427f008f2d515bcd2544">
-        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-24.2.1_36adea84af7ce3685e8678eeb5c5841fa9a47385\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\jars\libs\internal_impl-24.2.1.jar"
         jumboMode="true"
         optimize="true"
@@ -153,15 +162,6 @@
         revision="25.0.0"
         sha1="d5c731fc64c03dfe04d51134955b483551c35849">
         <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-vector-drawable-24.2.1_3d97b2ca0b002d032ae3d416c3c238fc1ed12348\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="09b462bbcb77650284bd6614f1a32f360ef369f8">
-        <dex dex="C:\Users\cy804\Documents\GitHub\Glacier_Music\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-media-compat-24.2.1_7186546d801e6bb28f2129b6cfcb478873a30164\classes.dex" />
     </item>
     <item
         is-multidex="true"

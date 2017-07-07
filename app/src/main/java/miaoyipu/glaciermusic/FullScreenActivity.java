@@ -1,5 +1,4 @@
 package miaoyipu.glaciermusic;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,15 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-
 import miaoyipu.glaciermusic.mservice.MusicService;
-import miaoyipu.glaciermusic.songs.Songs;
+
 
 /**
  * Created by cy804 on 2017-05-25.
@@ -25,31 +22,21 @@ import miaoyipu.glaciermusic.songs.Songs;
 
 public class FullScreenActivity extends AppCompatActivity {
     private static final String TAG = "FULL_SCREEN";
-
-    public static MusicService musicService;
+    private static MusicService musicService;
     private boolean musicBound = false;
+    private boolean active = false;
     private Intent playIntent;
-    private boolean active;
+    private ImageView prevBtn, playBtn, nextBtn, shuffleBtn;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             musicService = binder.getService();
-            Log.d(TAG, "Music Service binded");
             musicBound = true;
-
-            musicService.getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    musicService.playNext();
-                    setInfo();
-                    setPlayButton();
-                }
-            });
-
+            setOnCompletion();
+            setButton();
             setInfo();
-            setPlayButton();
             initSeekBar();
         }
 
@@ -63,50 +50,51 @@ public class FullScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.full_screen);
+
+        prevBtn = (ImageView)findViewById(R.id.fullscreen_prev);
+        prevBtn.setOnClickListener(playPrev);
+        playBtn = (ImageView)findViewById(R.id.fullscreen_play);
+        playBtn.setOnClickListener(playPause);
+        nextBtn = (ImageView) findViewById(R.id.fullscreen_next);
+        nextBtn.setOnClickListener(playNext);
+        shuffleBtn = (ImageView) findViewById(R.id.fullscreen_shuffle);
+        shuffleBtn.setOnClickListener(playShuffle);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void onResume() {
+        super.onResume();
         active = true;
-
         if (!musicBound) {
-            Log.d(TAG, "Binding Service");
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+        }else {
+            setOnCompletion();
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-
+    protected  void onPause() {
+        super.onPause();
         active = false;
+    }
 
-        stopService(playIntent);
+    @Override
+    protected  void onDestroy() {
+        super.onDestroy();
         unbindService(musicConnection);
-        musicService = null;
         musicBound = false;
     }
 
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG, "ACTIVITY DESTORIED");
-        super.onDestroy();
-//        stopService(playIntent);
-//        unbindService(musicConnection);
-//        musicService = null;
-//        musicBound = false;
-    }
-
-    private void setPlayButton() {
-        ImageView play_btn = (ImageView) findViewById(R.id.fullscreen_play);
+    private void setButton() {
         if (musicService != null && musicService.isPlaying()) {
-            play_btn.setImageResource(R.drawable.pause_green);
+            playBtn.setImageResource(R.drawable.pause_green);
         } else {
-            play_btn.setImageResource(R.drawable.play_green);
+            playBtn.setImageResource(R.drawable.play_green);
         }
+        if (musicService != null && musicService.isShuffle()) {
+            shuffleBtn.setImageResource(R.drawable.shuffle_green_dark);
+        } else { shuffleBtn.setImageResource(R.drawable.shuffle_green); }
     }
 
     private void setInfo() {
@@ -153,4 +141,55 @@ public class FullScreenActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setOnCompletion() {
+        musicService.getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                musicService.playNext();
+                setInfo();
+                setButton();
+            }
+        });
+    }
+
+    final View.OnClickListener playPrev = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            musicService.playPrev();
+            setInfo();
+            playBtn.setImageResource(R.drawable.pause_green);
+        }
+    };
+
+    final View.OnClickListener playPause = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (musicService.isPlaying()) {
+                musicService.pause();
+                playBtn.setImageResource(R.drawable.play_green);
+            } else {
+                musicService.pausePlay();
+                playBtn.setImageResource(R.drawable.pause_green);
+            }
+        }
+    };
+
+    final View.OnClickListener playNext = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            musicService.playNext();
+            setInfo();
+            playBtn.setImageResource(R.drawable.pause_green);
+        }
+    };
+
+    final View.OnClickListener playShuffle = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            musicService.setShuffle();
+            setButton();
+        }
+    };
+
 }

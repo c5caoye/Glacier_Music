@@ -22,9 +22,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,13 +40,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
     private static final int READ_STORAGE = 11;
     private static final int WRITE_STORAGE = 12;
-    private ArrayList<Songs> song_list;
-
-    public static MusicService musicService;
+    private static ArrayList<Songs> song_list;
+    private static MusicService musicService;
     private boolean musicBound = false;
     private Intent playIntent;
-
-    private PowerManager.WakeLock wakeLock;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         @Override
@@ -53,15 +52,7 @@ public class MainActivity extends AppCompatActivity {
             musicService = binder.getService();
             musicService.setSongList(song_list);
             musicBound = true;
-
-            musicService.getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    musicService.playNext();
-                    setControlBarTitle();
-                }
-            });
-
+            setOnCompletion();
             setPlayButton();
             setControlBarTitle();
         }
@@ -81,43 +72,29 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         findViewById(R.id.control_bar_play).setOnClickListener(play_button_onClickListener);
-        findViewById(R.id.fab).setOnClickListener(fab_onClickListener);
-
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MAIN LOCK");
-        wakeLock.acquire();
+        findViewById(R.id.main_fab).setOnClickListener(fab_onClickListener);
 
         handlePermission();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
+    protected void onResume() {
+        super.onResume();
         if (!musicBound) {
             playIntent = new Intent(this, MusicService.class);
             bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-//            startService(playIntent);
-        }
-    }
+        } else { setOnCompletion();}
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        stopService(playIntent);
-        unbindService(musicConnection);
-        musicService = null;
-        musicBound = false;
+        setControlBarTitle();
+        setPlayButton();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        wakeLock.release();
-//        stopService(playIntent);
-//        unbindService(musicConnection);
-//        musicService = null;
-//        musicBound = false;
+        unbindService(musicConnection);
+        stopService(playIntent);
+        musicBound = false;
     }
 
     @Override
@@ -174,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "play/pause");
             if (!musicService.isPlaying()) {
                 iv.setImageResource(R.drawable.pause);
-                musicService.play();
+                musicService.pausePlay();
                 setControlBarTitle();
             } else {
                 iv.setImageResource(R.drawable.play);
@@ -188,9 +165,11 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             FloatingActionButton fab = (FloatingActionButton)v;
             if (musicService.isShuffle()) {
+                Toast.makeText(getApplicationContext(), "shuffle off", Toast.LENGTH_SHORT).show();
                 fab.setImageResource(R.drawable.loop);
                 musicService.setShuffle();
             } else {
+                Toast.makeText(getApplicationContext(), "shuffle on", Toast.LENGTH_SHORT).show();
                 fab.setImageResource(R.drawable.shuffle);
                 musicService.setShuffle();
             }
@@ -211,6 +190,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             play_btn.setImageResource(R.drawable.play);
         }
+
+        FloatingActionButton shuffle_btn = (FloatingActionButton) findViewById(R.id.main_fab);
+        if (musicService != null && musicService.isShuffle()) {
+            shuffle_btn.setImageResource(R.drawable.shuffle);
+        } else {
+            shuffle_btn.setImageResource(R.drawable.loop);
+        }
     }
 
     public void songPicked(View view) {
@@ -230,5 +216,15 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE);
         }
         setSongAdapter();
+    }
+
+    private void setOnCompletion() {
+        musicService.getPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                musicService.playNext();
+                setControlBarTitle();
+            }
+        });
     }
 }
