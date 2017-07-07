@@ -136,7 +136,7 @@ public class FullScreenActivity extends AppCompatActivity {
             @Override
             public void run(){
                 if (active) {
-                    if (musicService.isRunning()) {
+                    if (musicService.isPlaying()) {
                         seekBar.setMax(musicService.getDuration());
                         seekBar.setProgress(musicService.getPosn());
                     }
@@ -176,6 +176,7 @@ public class FullScreenActivity extends AppCompatActivity {
                 musicService.pausePlay();
                 playBtn.setImageResource(R.drawable.pause_green);
             }
+            setInfo();
         }
     };
 

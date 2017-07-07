@@ -126,7 +126,11 @@ public class MusicService extends Service implements
     }
 
     public void pausePlay() {
-        player.start();
+        if (isRunning) {
+            player.start();
+        } else {
+            play();
+        }
     }
 
     public void play() {
