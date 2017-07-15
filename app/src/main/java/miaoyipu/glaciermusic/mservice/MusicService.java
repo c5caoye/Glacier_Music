@@ -1,13 +1,16 @@
 package miaoyipu.glaciermusic.mservice;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Binder;
@@ -33,7 +36,11 @@ public class MusicService extends Service implements
         MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener,
         AudioManager.OnAudioFocusChangeListener{
 
-    private MediaSession mediaSession;
+    public static final String ACTION_PLAY = "action_play";
+    public static final String ACTION_PAUSE = "action_pause";
+    public static final String ACTION_PREVIOUS = "action_previous";
+    public static final String ACTION_NEXT = "action_next";
+    public static final String ACTION_STOP = "action_stop";
 
     private final IBinder mBind = new MusicBinder();
     private static final String TAG = "MService";
@@ -126,6 +133,7 @@ public class MusicService extends Service implements
     public void pause() {
         Log.d(TAG, "PAUSE");
         player.pause();
+        buildNotification(generateAction(R.drawable.ic_play, "Play", ACTION_PLAY));
     }
 
     public void pausePlay() {
@@ -242,20 +250,60 @@ public class MusicService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
-        Intent noIntent = new Intent(this, FullScreenActivity.class);
-        noIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendInt = PendingIntent.getActivities(this, 0, new Intent[]{noIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification.Builder builder = new Notification.Builder(this);
 
-        builder.setContentIntent(pendInt)
-                .setSmallIcon(R.drawable.play_green)
-                .setTicker(songTitle)
-                .setOngoing(true)
-                .setContentText("Now Playing")
-                .setContentText(songTitle);
-        Notification not = builder.build();
+//        Intent noIntent = new Intent(this, FullScreenActivity.class);
+//        noIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendInt = PendingIntent.getActivities(this, 0, new Intent[]{noIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+//        Notification.Builder builder = new Notification.Builder(this);
+//
+//        builder.setContentIntent(pendInt)
+//                .setSmallIcon(R.drawable.play_green)
+//                .setTicker(songTitle)
+//                .setOngoing(true)
+//                .setContentText("Now Playing")
+//                .setContentText(songTitle);
+//        Notification not = builder.build();
+//        startForeground(NOTIFY_ID, not);
 
-        startForeground(NOTIFY_ID, not);
+        buildNotification(generateAction(R.drawable.ic_pause, "Pause", ACTION_PAUSE));
+    }
+
+    private Notification.Action generateAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), MusicService.class);
+        intent.setAction(intentAction);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        return new Notification.Action.Builder(icon, title, pendingIntent).build();
+    }
+
+
+    private void buildNotification(Notification.Action action) {
+        Notification.MediaStyle style = new Notification.MediaStyle();
+        Intent intent = new Intent(getApplicationContext(), FullScreenActivity.class);
+        intent.setAction(ACTION_STOP);
+        PendingIntent deleteIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivities(this, 0, new Intent[]{intent}, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Builder builder = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.play)
+                .setContentTitle("Glacier Music")
+                .setContentTitle(this.songTitle)
+                .setContentIntent(pendingIntent)
+                .setDeleteIntent(deleteIntent)
+                .setStyle(style);
+
+        builder.addAction(generateAction(R.drawable.ic_prev, "Previous", ACTION_PREVIOUS));
+        builder.addAction(action);
+        builder.addAction(generateAction(R.drawable.ic_next, "Next", ACTION_NEXT));
+        style.setShowActionsInCompactView(0, 1, 2);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, builder.build());
+    }
+
+    @Override
+    public int onStartCommand (Intent intent, int flags, int startId) {
+        handleIntent(intent);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -275,4 +323,24 @@ public class MusicService extends Service implements
         stopSelf();
         stopForeground(true);
     }
+
+    private void handleIntent(Intent intent) {
+        if (intent == null || intent.getAction() == null) { return; }
+
+        String action = intent.getAction();
+        if (action.equalsIgnoreCase(ACTION_PLAY)) {
+            this.pausePlay();
+        } else if (action.equalsIgnoreCase(ACTION_PAUSE)) {
+            this.pause();
+        } else if (action.equalsIgnoreCase(ACTION_NEXT)) {
+            this.playNext();
+        } else if (action.equalsIgnoreCase(ACTION_PREVIOUS)) {
+            this.playPrev();
+        } else if (action.equalsIgnoreCase(ACTION_STOP)) {
+            Log.d(TAG, "ACTION_STOP");
+            this.pause();
+        }
+    }
+
+
 }
