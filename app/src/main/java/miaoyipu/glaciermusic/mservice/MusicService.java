@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -31,6 +32,8 @@ public class MusicService extends Service implements
         MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener,
         AudioManager.OnAudioFocusChangeListener{
+
+    private MediaSession mediaSession;
 
     private final IBinder mBind = new MusicBinder();
     private static final String TAG = "MService";
