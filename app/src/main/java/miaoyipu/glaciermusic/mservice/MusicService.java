@@ -135,6 +135,7 @@ public class MusicService extends Service implements
     }
 
     public void pausePlay() {
+        buildNotification(generateAction(R.drawable.ic_pause, "Pause", Utli.ACTION_PAUSE));
         if (isRunning) {
             player.start();
         } else {
@@ -251,6 +252,7 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mp) {
         mp.start();
         buildNotification(generateAction(R.drawable.ic_pause, "Pause", Utli.ACTION_PAUSE));
+        sendUIBroadcast();
     }
 
     private Notification.Action generateAction(int icon, String title, String intentAction) {
@@ -328,6 +330,14 @@ public class MusicService extends Service implements
             Log.d(TAG, "ACTION_STOP");
             this.pause();
         }
+
+        sendUIBroadcast();
+    }
+
+    private void sendUIBroadcast() {
+        Log.d(TAG, "Send UI Sync Broadcast");
+        Intent broadcastIntent = new Intent(Utli.ACTION_UISYNC);
+        sendBroadcast(broadcastIntent);
     }
 }
 

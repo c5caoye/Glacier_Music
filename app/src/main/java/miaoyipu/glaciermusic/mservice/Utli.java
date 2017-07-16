@@ -11,5 +11,5 @@ class Utli {
     public static final String ACTION_PREVIOUS = "action_previous";
     public static final String ACTION_NEXT = "action_next";
     public static final String ACTION_STOP = "action_stop";
-
+    public static final String ACTION_UISYNC = "action_uisync";
 }

@@ -1,9 +1,11 @@
 package miaoyipu.glaciermusic;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int WRITE_STORAGE = 12;
     private static ArrayList<Songs> song_list;
     private static MusicService musicService;
-    private boolean musicBound = false;
+    private boolean musicBound = false, active = false;
     private Intent playIntent;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -60,6 +62,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             musicBound = false;
+        }
+    };
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Received UI Sync Broadcast");
+            if (active && intent.getAction().equalsIgnoreCase("action_uisync")) {
+                setControlBarTitle();
+                setPlayButton();
+            }
         }
     };
 
@@ -89,6 +102,15 @@ public class MainActivity extends AppCompatActivity {
             setControlBarTitle();
             setPlayButton();
         }
+
+        active = true;
+        registerReceiver(broadcastReceiver, new IntentFilter("action_uisync"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active = false;
     }
 
     @Override

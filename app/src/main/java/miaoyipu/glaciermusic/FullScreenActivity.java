@@ -1,7 +1,9 @@
 package miaoyipu.glaciermusic;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -48,6 +50,17 @@ public class FullScreenActivity extends AppCompatActivity {
         }
     };
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Received UI Sync Broadcast");
+            if (active && intent.getAction().equalsIgnoreCase("action_uisync")) {
+                setInfo();
+                setButton();
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +88,8 @@ public class FullScreenActivity extends AppCompatActivity {
             setOnCompletion();
             initSeekBar();
         }
+
+        registerReceiver(broadcastReceiver, new IntentFilter("action_uisync"));
     }
 
     @Override
@@ -199,5 +214,4 @@ public class FullScreenActivity extends AppCompatActivity {
             setButton();
         }
     };
-
 }
