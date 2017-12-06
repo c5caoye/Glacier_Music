@@ -3,14 +3,17 @@ package miaoyipu.glaciermusic;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.IBinder;
-import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,16 +37,16 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import miaoyipu.glaciermusic.mservice.MusicService;
-import miaoyipu.glaciermusic.songs.Songs;
-import miaoyipu.glaciermusic.songs.SongsAdapter;
+import miaoyipu.glaciermusic.songs.Song;
+import miaoyipu.glaciermusic.songs.SongAdapter;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
-    private static final int READ_STORAGE = 11;
-    private static final int WRITE_STORAGE = 12;
-    private static ArrayList<Songs> song_list;
+    private static final long MUSIC_DURATION = 30000;
+    private static final int READ_STORAGE = 11, WRITE_STORAGE = 12;
+    private boolean musicBound = false, isActive = false;
+    private static ArrayList<Song> songList;
     private static MusicService musicService;
-    private boolean musicBound = false, active = false;
     private Intent playIntent;
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             musicService = binder.getService();
-            musicService.setSongList(song_list);
+            musicService.setSongList(songList);
             musicBound = true;
             setOnCompletion();
             setPlayButton();
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Received UI Sync Broadcast");
-            if (active && intent.getAction().equalsIgnoreCase("action_uisync")) {
+            if (isActive && intent.getAction().equalsIgnoreCase("action_uisync")) {
                 setControlBarTitle();
                 setPlayButton();
             }
@@ -103,14 +105,14 @@ public class MainActivity extends AppCompatActivity {
             setPlayButton();
         }
 
-        active = true;
+        isActive = true;
         registerReceiver(broadcastReceiver, new IntentFilter("action_uisync"));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        active = false;
+        isActive = false;
     }
 
     @Override
@@ -155,18 +157,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setSongAdapter() {
-        song_list = Songs.getSongList(getContentResolver(), getResources());
+        Cursor mCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null, null, null, null);
 
-        Collections.sort(song_list, new Comparator<Songs>() {
+        if (mCursor != null && mCursor.moveToFirst()) {
+            int idCol = mCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int titleCol = mCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int artistCol = mCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumCol = mCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int durationCol = mCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+
+            do {
+                if (mCursor.getLong(durationCol) >= MUSIC_DURATION) {
+                    long id = mCursor.getLong(idCol);
+                    String title = mCursor.getString(titleCol);
+                    String artist = mCursor.getString(artistCol);
+                    long album = mCursor.getLong(albumCol);
+                    Uri artUri = ContentUris.withAppendedId(
+                            Uri.parse("content://media/external/audio/albumart"), album);
+                    songList.add(new Song(id, title, artist, artUri));
+                }
+            } while (mCursor.moveToNext());
+        }
+
+        Collections.sort(songList, new Comparator<Song>() {
             @Override
-            public int compare(Songs o1, Songs o2) {
+            public int compare(Song o1, Song o2) {
                 return o1.getTitle().compareTo(o2.getTitle());
             }
         });
 
-        SongsAdapter songAdpter = new SongsAdapter(this, song_list);
-        ListView songs_view = (ListView) findViewById(R.id.song_list);
-        songs_view.setAdapter(songAdpter);
+        SongAdapter songAdpter = new SongAdapter(this, songList);
+        ListView songsView = (ListView) findViewById(R.id.song_list);
+        songsView.setAdapter(songAdpter);
     }
 
     final View.OnClickListener play_button_onClickListener = new View.OnClickListener() {
@@ -232,14 +255,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handlePermission() {
-        int storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        int r_storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         int w_storage_check = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (storage_check == PackageManager.PERMISSION_DENIED) {
+
+        if (r_storage_check == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE);
         }
-        if (w_storage_check == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE);
-        }
+
+        /* Why writing permission is needed? */
+//        if (w_storage_check == PackageManager.PERMISSION_DENIED) {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE);
+//        }
         setSongAdapter();
     }
 

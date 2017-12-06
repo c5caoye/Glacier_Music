@@ -8,11 +8,8 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.session.MediaController;
-import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -22,11 +19,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import miaoyipu.glaciermusic.FullScreenActivity;
 import miaoyipu.glaciermusic.R;
-import miaoyipu.glaciermusic.songs.Songs;
+import miaoyipu.glaciermusic.songs.Song;
 
 /**
  * Created by cy804 on 2017-06-05.
@@ -42,7 +38,7 @@ public class MusicService extends Service implements
     private static final int NOTIFY_ID = 13;
     private static MediaPlayer player;
 
-    private ArrayList<Songs> songList, shuffleList;
+    private ArrayList<Song> songList, shuffleList;
     private int songListSize, currentVolume, curPosn;
     private String songTitle = "Glacier Music", songArtist = "Unknown";
     private AudioManager audioManager;
@@ -114,10 +110,10 @@ public class MusicService extends Service implements
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {}
 
-    public void setSongList(ArrayList<Songs> theSongs) {
+    public void setSongList(ArrayList<Song> theSongs) {
         Log.d(TAG, "Setting song list");
         songList = theSongs;
-        shuffleList = (ArrayList<Songs>) songList.clone();
+        shuffleList = (ArrayList<Song>) songList.clone();
         Collections.shuffle(shuffleList);
         songListSize = theSongs.size();
         curPosn = 0;
@@ -131,11 +127,11 @@ public class MusicService extends Service implements
     public void pause() {
         Log.d(TAG, "PAUSE");
         player.pause();
-        buildNotification(generateAction(R.drawable.ic_play, "Play", Utli.ACTION_PLAY));
+        buildNotification(generateAction(R.drawable.ic_play, "Play", Utility.ACTION_PLAY));
     }
 
     public void pausePlay() {
-        buildNotification(generateAction(R.drawable.ic_pause, "Pause", Utli.ACTION_PAUSE));
+        buildNotification(generateAction(R.drawable.ic_pause, "Pause", Utility.ACTION_PAUSE));
         if (isRunning) {
             player.start();
         } else {
@@ -145,7 +141,7 @@ public class MusicService extends Service implements
 
     public void play() {
         player.reset();
-        Songs song;
+        Song song;
 
         if (shuffle) {
             song = shuffleList.get(curPosn);
@@ -158,11 +154,11 @@ public class MusicService extends Service implements
 
     public void play(int idx) {
         player.reset();
-        Songs song = songList.get(idx);
+        Song song = songList.get(idx);
         startPlay(song);
     }
 
-    public void startPlay(Songs song) {
+    public void startPlay(Song song) {
         registerReceiver(noisyReceiver, intentFilter);
 
         songTitle = song.getTitle();
@@ -251,7 +247,7 @@ public class MusicService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         mp.start();
-        buildNotification(generateAction(R.drawable.ic_pause, "Pause", Utli.ACTION_PAUSE));
+        buildNotification(generateAction(R.drawable.ic_pause, "Pause", Utility.ACTION_PAUSE));
         sendUIBroadcast();
     }
 
@@ -266,7 +262,7 @@ public class MusicService extends Service implements
     private void buildNotification(Notification.Action action) {
         Notification.MediaStyle style = new Notification.MediaStyle();
         Intent intent = new Intent(getApplicationContext(), FullScreenActivity.class);
-        intent.setAction(Utli.ACTION_STOP);
+        intent.setAction(Utility.ACTION_STOP);
         PendingIntent deleteIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
         PendingIntent pendingIntent = PendingIntent.getActivities(this, 0, new Intent[]{intent}, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder builder = new Notification.Builder(this)
@@ -277,9 +273,9 @@ public class MusicService extends Service implements
                 .setDeleteIntent(deleteIntent)
                 .setStyle(style);
 
-        builder.addAction(generateAction(R.drawable.ic_prev, "Previous", Utli.ACTION_PREVIOUS));
+        builder.addAction(generateAction(R.drawable.ic_prev, "Previous", Utility.ACTION_PREVIOUS));
         builder.addAction(action);
-        builder.addAction(generateAction(R.drawable.ic_next, "Next", Utli.ACTION_NEXT));
+        builder.addAction(generateAction(R.drawable.ic_next, "Next", Utility.ACTION_NEXT));
         style.setShowActionsInCompactView(0, 1, 2);
 
         NotificationManager notificationManager =
@@ -318,15 +314,15 @@ public class MusicService extends Service implements
         if (intent == null || intent.getAction() == null) { return; }
 
         String action = intent.getAction();
-        if (action.equalsIgnoreCase(Utli.ACTION_PLAY)) {
+        if (action.equalsIgnoreCase(Utility.ACTION_PLAY)) {
             this.pausePlay();
-        } else if (action.equalsIgnoreCase(Utli.ACTION_PAUSE)) {
+        } else if (action.equalsIgnoreCase(Utility.ACTION_PAUSE)) {
             this.pause();
-        } else if (action.equalsIgnoreCase(Utli.ACTION_NEXT)) {
+        } else if (action.equalsIgnoreCase(Utility.ACTION_NEXT)) {
             this.playNext();
-        } else if (action.equalsIgnoreCase(Utli.ACTION_PREVIOUS)) {
+        } else if (action.equalsIgnoreCase(Utility.ACTION_PREVIOUS)) {
             this.playPrev();
-        } else if (action.equalsIgnoreCase(Utli.ACTION_STOP)) {
+        } else if (action.equalsIgnoreCase(Utility.ACTION_STOP)) {
             Log.d(TAG, "ACTION_STOP");
             this.pause();
         }
@@ -336,7 +332,7 @@ public class MusicService extends Service implements
 
     private void sendUIBroadcast() {
         Log.d(TAG, "Send UI Sync Broadcast");
-        Intent broadcastIntent = new Intent(Utli.ACTION_UISYNC);
+        Intent broadcastIntent = new Intent(Utility.ACTION_UISYNC);
         sendBroadcast(broadcastIntent);
     }
 }

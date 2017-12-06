@@ -1,8 +1,6 @@
 package miaoyipu.glaciermusic.songs;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,23 +11,21 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import miaoyipu.glaciermusic.R;
-import miaoyipu.glaciermusic.songs.Songs;
 
 /**
  * Created by cy804 on 2017-05-21.
  */
 
-public class SongsAdapter extends BaseAdapter{
+public class SongAdapter extends BaseAdapter{
 
-    private ArrayList<Songs> songs;
+    private ArrayList<Song> songs;
     private LayoutInflater songInf;
     private Context context;
 
-    public SongsAdapter(Context c, ArrayList<Songs> songs) {
+    public SongAdapter(Context c, ArrayList<Song> songs) {
         this.songs = songs;
         songInf = LayoutInflater.from(c);
         this.context = c;
@@ -58,7 +54,7 @@ public class SongsAdapter extends BaseAdapter{
         TextView title_view = (TextView) songLay.findViewById(R.id.song_title);
         TextView artist_view = (TextView) songLay.findViewById(R.id.song_artist);
 
-        Songs cur_song = songs.get(position);
+        Song cur_song = songs.get(position);
 
         Glide.with(context)
                 .load(cur_song.getAlbumUri())

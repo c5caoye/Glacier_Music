@@ -18,7 +18,7 @@ class BecomingNoisyReceiver extends BroadcastReceiver {
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equalsIgnoreCase(intent.getAction())) {
             Log.d(TAG, "Headphone unplugged.");
             Intent pintent = new Intent(context, MusicService.class);
-            pintent.setAction(Utli.ACTION_PAUSE);
+            pintent.setAction(Utility.ACTION_PAUSE);
             context.startService(pintent);
         }
     }
