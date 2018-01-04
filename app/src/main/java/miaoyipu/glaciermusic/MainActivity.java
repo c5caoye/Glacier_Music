@@ -3,7 +3,6 @@ package miaoyipu.glaciermusic;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -34,24 +33,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import miaoyipu.glaciermusic.mservice.MusicService;
+import miaoyipu.glaciermusic.songs.MusicLibrary;
 import miaoyipu.glaciermusic.songs.Song;
 import miaoyipu.glaciermusic.songs.SongAdapter;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main";
-    private static final long MUSIC_DURATION = 30000;
     private static final int READ_STORAGE = 11, WRITE_STORAGE = 12;
     private boolean musicBound = false, isActive = false;
-    private static ArrayList<Song> songList;
+    private static Song[] songList;
     private static MusicService musicService;
     private Intent playIntent;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private MusicLibrary musicLibrary;
 
 
 
@@ -163,40 +161,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setSongAdapter() {
-        songList = new ArrayList<Song>();
+        musicLibrary = new MusicLibrary();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor mCursor = getContentResolver().query(musicUri, null, null, null, null);
-
-        if (mCursor != null && mCursor.moveToFirst()) {
-            int idCol = mCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-            int titleCol = mCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int artistCol = mCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int albumCol = mCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-            int durationCol = mCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
-
-            do {
-                if (mCursor.getLong(durationCol) >= MUSIC_DURATION) {
-//                    Log.d(TAG, String.valueOf(mCursor.getLong(idCol)));
-
-                    long id = mCursor.getLong(idCol);
-                    String title = mCursor.getString(titleCol);
-                    String artist = mCursor.getString(artistCol);
-                    long album = mCursor.getLong(albumCol);
-                    Uri artUri = ContentUris.withAppendedId(
-                            Uri.parse("content://media/external/audio/albumart"), album);
-                    songList.add(new Song(id, title, artist, artUri));
-                }
-            } while (mCursor.moveToNext());
-        }
-
-        Log.d(TAG, String.valueOf(songList.size()));
-
-        Collections.sort(songList, new Comparator<Song>() {
-            @Override
-            public int compare(Song o1, Song o2) {
-                return o1.getTitle().compareTo(o2.getTitle());
-            }
-        });
+        songList = musicLibrary.getSongs(mCursor);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.song_list);
         mRecyclerView.setHasFixedSize(true);

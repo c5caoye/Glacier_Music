@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import miaoyipu.glaciermusic.FullScreenActivity;
@@ -38,7 +39,7 @@ public class MusicService extends Service implements
     private static final int NOTIFY_ID = 13;
     private static MediaPlayer player;
 
-    private ArrayList<Song> songList, shuffleList;
+    private Song[] songList, shuffleList;
     private int songListSize, currentVolume, curPosn;
     private String songTitle = "Glacier Music", songArtist = "Unknown";
     private AudioManager audioManager;
@@ -110,12 +111,12 @@ public class MusicService extends Service implements
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {}
 
-    public void setSongList(ArrayList<Song> theSongs) {
+    public void setSongList(Song[] theSongs) {
         Log.d(TAG, "Setting song list");
         songList = theSongs;
-        shuffleList = (ArrayList<Song>) songList.clone();
-        Collections.shuffle(shuffleList);
-        songListSize = theSongs.size();
+        shuffleList = (Song[]) songList.clone();
+        Collections.shuffle(Arrays.asList(shuffleList));
+        songListSize = theSongs.length;
         curPosn = 0;
     }
 
@@ -144,9 +145,9 @@ public class MusicService extends Service implements
         Song song;
 
         if (shuffle) {
-            song = shuffleList.get(curPosn);
+            song = shuffleList[curPosn];
         } else {
-            song = songList.get(curPosn);
+            song = songList[curPosn];
         }
 
         startPlay(song);
@@ -154,7 +155,7 @@ public class MusicService extends Service implements
 
     public void play(int idx) {
         player.reset();
-        Song song = songList.get(idx);
+        Song song = songList[idx];
         startPlay(song);
     }
 

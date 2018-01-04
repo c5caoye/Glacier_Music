@@ -30,7 +30,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView albumView;
         public TextView titleView, artistView;
-        public View mainView;
+        public View mainView; // The parent view. This is added for onClick to work.
 
         public ViewHolder(View v) {
             super(v);
@@ -41,8 +41,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         }
     }
 
-    public SongAdapter(Context c, ArrayList<Song> data) {
-        songs = data.toArray(new Song[0]);
+    public SongAdapter(Context c, Song[] data) {
+        songs = data;
         context = c;
     }
 
@@ -59,7 +59,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Song curSong = songs[position];
 
-        holder.mainView.setTag(position);
+        holder.mainView.setTag(position); // For onClick to work.
         holder.titleView.setText(curSong.getTitle());
         holder.artistView.setText(curSong.getArtist());
         Glide.with(context)
@@ -74,76 +74,3 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         return songs.length;
     }
 }
-
-
-
-//public class SongAdapter extends RecyclerView.Adapter{
-//
-//    private ArrayList<Song> songs;
-//    private LayoutInflater songInf;
-//
-//    public static class MyViewHolder extends RecyclerView.ViewHolder {
-//        public ImageView albumView;
-//        public TextView titleView, artistView;
-//
-//        public MyViewHolder(View v) {
-//            super(v);
-//            albumView = (ImageView) v.findViewById(R.id.song_album);
-//            titleView = (TextView) v.findViewById(R.id.song_title);
-//            artistView = (TextView) v.findViewById(R.id.song_artist);
-//        }
-//    }
-//
-//    /** Constructor **/
-//    public SongAdapter(ArrayList<Song> songs) {
-//        this.songs = songs;
-//    }
-//
-//    @Override
-//    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        TextView tView = (TextView) LayoutInflater.from(parent.getContext())
-//                .inflate(R.layout.)
-//    }
-//
-//    @Override
-//    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-//
-//    }
-//
-//    @Override
-//    public long getItemId(int position) {
-//        return 0;
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return 0;
-//    }
-//
-//////    @Override
-////    public View getView(int position, View convertView, ViewGroup parent) {
-////        SongViewHolder holder;
-////
-////        if (convertView == null) {
-////            convertView = songInf.inflate(R.layout.song_adapter_layout, parent, false);
-////            holder = new SongViewHolder();
-////            holder.albumView = (ImageView) convertView.findViewById(R.id.song_album);
-////            holder.titleView = (TextView) convertView.findViewById(R.id.song_title);
-////            holder.artistView = (TextView) convertView.findViewById(R.id.song_artist);
-////            convertView.setTag(holder);
-////        } else {
-////            holder = (SongViewHolder) convertView.getTag();
-////        }
-////
-////        Song song = songs.get(position);
-////        Glide.with(context)
-////                .load(song.getAlbumUri())
-////                .asBitmap()
-////                .placeholder(R.drawable.default_album)
-////                .into(holder.albumView);
-////        holder.titleView.setText(song.getTitle());
-////        holder.artistView.setText(song.getArtist());
-////
-////        return convertView;
-////     }
-//}
