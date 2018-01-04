@@ -21,6 +21,8 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -28,7 +30,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
     private static ArrayList<Song> songList;
     private static MusicService musicService;
     private Intent playIntent;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+
 
     private ServiceConnection musicConnection = new ServiceConnection() {
         @Override
@@ -157,8 +163,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setSongAdapter() {
-        Cursor mCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                null, null, null, null);
+        songList = new ArrayList<Song>();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor mCursor = getContentResolver().query(musicUri, null, null, null, null);
 
         if (mCursor != null && mCursor.moveToFirst()) {
             int idCol = mCursor.getColumnIndex(MediaStore.Audio.Media._ID);
@@ -169,6 +176,8 @@ public class MainActivity extends AppCompatActivity {
 
             do {
                 if (mCursor.getLong(durationCol) >= MUSIC_DURATION) {
+//                    Log.d(TAG, String.valueOf(mCursor.getLong(idCol)));
+
                     long id = mCursor.getLong(idCol);
                     String title = mCursor.getString(titleCol);
                     String artist = mCursor.getString(artistCol);
@@ -180,6 +189,8 @@ public class MainActivity extends AppCompatActivity {
             } while (mCursor.moveToNext());
         }
 
+        Log.d(TAG, String.valueOf(songList.size()));
+
         Collections.sort(songList, new Comparator<Song>() {
             @Override
             public int compare(Song o1, Song o2) {
@@ -187,9 +198,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SongAdapter songAdpter = new SongAdapter(this, songList);
-        ListView songsView = (ListView) findViewById(R.id.song_list);
-        songsView.setAdapter(songAdpter);
+        mRecyclerView = (RecyclerView) findViewById(R.id.song_list);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new SongAdapter(this, songList);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     final View.OnClickListener play_button_onClickListener = new View.OnClickListener() {
@@ -263,9 +277,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /* Why writing permission is needed? */
-//        if (w_storage_check == PackageManager.PERMISSION_DENIED) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE);
-//        }
+        if (w_storage_check == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_STORAGE);
+       }
         setSongAdapter();
     }
 

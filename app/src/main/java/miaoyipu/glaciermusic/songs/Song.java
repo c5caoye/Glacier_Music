@@ -1,12 +1,6 @@
 package miaoyipu.glaciermusic.songs;
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.res.Resources;
-import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
-import java.util.ArrayList;
 
 /**
  * Class to store info for each single song.
